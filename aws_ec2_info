@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ -z $1 ]
+then
+cat << EndOfHelp
+No file specified!
+You have to provide a json from AWS using the command line like this:
+
+aws ec2 describe-instances --region \${region} > \${json}
+
+and then run:
+$0 \${json}
+
+The output will be something like:
+ server-cluster-1 | i-12345d49986c511234 | running | 10.11.12.13 |Name server-cluster-1,Role server, Master True, ...
+
+The fields are:
+ Name             |  instance_id         |  state  |  priv_ip    | Tags
+
+Of course \${region} and \${json} are variables...
+EndOfHelp
+   exit 1
+else
+  ExportInstances=$1
+fi
+
+cat $ExportInstances |jq -c ".Reservations[].Instances[] | {InstanceId, PrivateIpAddress, PublicIpAddress, InstanceType, Placement, State, SecurityGroups, Tags, BlockDeviceMappings}" | while read line
+do
+
+  Id=$(echo $line | jq -r .InstanceId)
+  Prv_Ip=$(echo $line | jq -r .PrivateIpAddress)
+  Pub_Ip=$(echo $line | jq -r .PublicIpAddress)
+  State=$(echo $line | jq -c ".State.Name" | tr -d '"')
+  Name=$( echo $line | jq -c '(.Tags[]|select(.Key=="Name")|.Value)' | tr -d '"' | awk '{print $1}')
+
+  LineTags=$(echo $line | jq -c .Tags)
+  LenTags=$(echo $LineTags | jq '. | length')
+  Tags=$(c=${LenTags}; echo $LineTags | jq -c .[]| while read line;do val=$(echo $line | jq -r .Value); key=$(echo $line | jq -r .Key); printf "$key $val"; if [[ ${c} -gt 1 ]];then printf ", "; c=$((${c} - 1));fi; done)
+
+ echo "${Name}|${Id}|${State}|${Prv_Ip}|${Pub_Ip}|${Tags}"
+
+done
