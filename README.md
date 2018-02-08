@@ -27,6 +27,11 @@ The fields are:
 
 (I used it in combination with ansible and terraform, sigh)
 
+## git-merge-dry-run
+A simple script to do a git merge --dry-run like with a couple of checks, it can show a git diff or not
+> Ex:
+
+> git-merge-dry-run random_stuff_1 verbose
 
 ## My Gist
 [Gist](https://gist.github.com/jtheo) that I should probably delete
