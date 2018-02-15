@@ -1,0 +1,47 @@
+#!/bin/bash
+
+
+LINES=$(printf '%*s\n' 58 | tr ' ' '=')
+LINE="# ${LINES} #"
+
+function header(){
+    printf "\n${LINE} \n"
+    printf "${LINE} \n"
+    printf "# $1 \n"
+    printf "${LINE} \n\n"
+}
+
+function msg(){
+    printf "\n${LINE} \n"
+    printf "# $1 \n\n"
+}
+
+
+
+if [[ ${USER} != "root" ]]
+then
+    header "This won't work, run it as root"
+    exit 1
+fi
+
+list_crontab="/etc/crontab /etc/cron.d /var/spool/cron/crontabs"
+
+msg "I will check in\n${list_crontab}"
+
+for cron in ${list_crontab}
+do
+    header "${cron}"
+    if [[ -d ${cron} ]]
+    then
+        for file in ${cron}/*
+        do
+            if [[ -e ${file} ]]
+            then
+                msg ${file}
+                cat ${file}
+            fi
+        done
+    else
+        cat ${cron}
+    fi
+done

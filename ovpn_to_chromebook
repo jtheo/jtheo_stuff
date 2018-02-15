@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#
+# from http://spawn.link/chromeos-openvpn-using-ovpn-files-to-setup-openvpn-on-chromeos/
+#
+
+
+if [[ -z $1 ]]
+then
+    echo 
+    echo 'You have to specify the ovpn file'
+    echo 'ex:'
+    echo "$0 <file.opvn>"
+    echo
+    exit 1
+else
+    if [[ -e $1 ]]
+    then
+        OVPN=$1
+    else
+        echo
+        echo 'The file you specified do not exist'
+        echo
+        exit 2
+    fi
+fi
+
+CONV=$(basename ${OVPN} .ovpn)
+
+awk '/<ca>/{flag=1;next}/<\/ca>/{flag=0}flag'     ${OVPN} > ${CONV}.ca.crt
+awk '/<cert>/{flag=1;next}/<\/cert>/{flag=0}flag' ${OVPN} > ${CONV}.client.crt
+awk '/<key>/{flag=1;next}/<\/key>/{flag=0}flag'   ${OVPN} > ${CONV}.client.key
+openssl pkcs12 -export -in ${CONV}.client.crt -inkey ${CONV}.client.key -out ${CONV}.client.p12
+
+echo 'Done'
+echo

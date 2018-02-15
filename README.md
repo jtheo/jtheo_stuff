@@ -26,6 +26,7 @@ The fields are:
 >  Name   |  instance_id       | state |  priv_ip   | Tags
 
 (I used it in combination with ansible and terraform, sigh)
+*It require [jq](https://stedolan.github.io/jq/)* to parse json files.
 
 ## git-merge-dry-run
 A simple script to do a git merge --dry-run like with a couple of checks, it can show a git diff or not
