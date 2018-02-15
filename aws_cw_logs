@@ -1,0 +1,119 @@
+#!/bin/bash
+#
+# It is a re-elaboration of the https://gist.github.com/iconara scripts:
+# https://gist.github.com/iconara/dd700f647d206ebecb65#file-download-sh
+# I needed the timestamp/date for each line and specific logs, not all of them
+# Although I may add an option to do it
+#
+
+function help(){
+  cat << EOF
+
+  Usage: $0 [-g <log_group_name>] [-s <log_group_name> <stream_name>] [-l <log_group_name> ] [-h]
+
+  -g <log_group_name> List the Group_log\'s streams
+    ex:
+       ./aws_cw_logs dev-app-logs
+    2018-02-15T11:46:16Z app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
+    [...]
+
+  -s <log_group_name> <stream_name> Download the stream from the log group
+    ex:
+       ./aws_cw_logs dev-app-logs app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
+       will create the file ./streams/app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7/dev-app-logs.log
+
+  -l  <log_group_name>  It will download the last stream from the log group.
+    ex:
+       ./aws_cw_logs -l dev-app-logs
+
+  -h; This help
+
+EOF
+}
+
+
+function list_log_group(){
+  log_group=$1
+  list_command="aws logs describe-log-streams --log-group-name $log_group"
+  group_next_token=''
+  response=$($list_command)
+  more_msg="Press q to exit, Space bar to continue the list"
+
+  echo $response \
+       | jq -rc '.logStreams[] | (.lastEventTimestamp /1000 | todate) + " " + .logStreamName' \
+       | sort -r \
+       | more -P"${more_msg}"  
+}
+
+function get_log_event(){
+  log_group=$1
+  stream=$2
+  get_command="aws logs get-log-events --log-group-name $log_group --start-from-head"
+  stream_next_token=''
+  counter=0
+
+  mkdir -p streams/$stream
+  output_path=$(printf "streams/%s/%s.log" $stream $log_group)
+  > ${output_path}
+
+  while true; do
+    if [[ -n $stream_next_token ]]; then
+      response=$($get_command --log-stream-name $stream --next-token $stream_next_token)
+    else
+      response=$($get_command --log-stream-name $stream)
+    fi
+    echo $response | jq -rc '.events[] | (.timestamp / 1000 | todate)+ " " + .message' >> $output_path
+    
+    if [[ $(echo $response | jq -r '.events | length') -eq 0 ]]; then
+      echo "Created: ${output_path}"
+      break
+    else
+      stream_next_token=$(echo $response | jq -r '.nextForwardToken')
+    fi
+  done
+}
+
+
+if [[ $# -lt 2 ]]
+then
+  help
+  exit 1
+fi
+
+case $1 in
+  -g|--group)
+    if [[ ! -z $2 ]]
+    then
+      list_log_group $2
+    else
+      help
+      exit 1
+    fi
+    ;;
+  -s|--stream)
+    if [[ ! -z $2 && ! -z $3 ]]
+    then
+      get_log_event $2 $3
+    else
+      help
+      exit 1
+    fi
+    ;;
+  -l|--last)
+    if [[ ! -z $2 ]]
+    then
+      stream=$(list_log_group $2 | head -1 | awk '{print $2}')
+      get_log_event $2 $stream
+    else
+      help
+      exit 1
+    fi
+    ;;
+    *)
+    help
+    ;;
+esac
+
+
+
+
