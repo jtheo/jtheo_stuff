@@ -8,29 +8,28 @@
 
 function help(){
   cat << EOF
+
   Usage: $0 [-g <log_group_name>] [-s <log_group_name> <stream_name>] [-l <log_group_name> ] [-h]
 
   -g <log_group_name> List the Group_log\'s streams
-    ex: 
-       $0 dev-v3-webapp-logs
-    2018-02-15T11:46:16Z v3-webapp/v3-webapp/320ca784-6d56-4497-b276-acd71f582e5a
-    2018-02-15T11:30:45Z v3-webapp/v3-webapp/af888ab3-2e55-4900-ac18-e3152c00c5ea
+    ex:
+       ./aws_cw_logs dev-app-logs
+    2018-02-15T11:46:16Z app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
     [...]
 
   -s <log_group_name> <stream_name> Download the stream from the log group
-    ex: 
-       $0 dev-v3-webapp-logs v3-webapp/v3-webapp/9fba9f10-8ca6-4b13-80fc-b960a343f152
-       will create the file ./streams/v3-webapp/v3-webapp/9fba9f10-8ca6-4b13-80fc-b960a343f152/dev-v3-webapp-logs.log
+    ex:
+       ./aws_cw_logs dev-app-logs app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
+       will create the file ./streams/app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7/dev-app-logs.log
 
   -l  <log_group_name>  It will download the last stream from the log group.
     ex:
-       $0 dev-v3-webapp-logs
+       ./aws_cw_logs -l dev-app-logs
 
   -h; This help
 
 EOF
 }
-
 
 
 function list_log_group(){
@@ -45,7 +44,6 @@ function list_log_group(){
        | sort -r \
        | more -P"${more_msg}"  
 }
-
 
 function get_log_event(){
   log_group=$1
