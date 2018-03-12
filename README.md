@@ -39,16 +39,16 @@ A simple script to do a git merge --dry-run like with a couple of checks, it can
 
   -g <log_group_name> List the Group_log\'s streams
     ex:
-       ./aws_cw_logs dev-app-logs
+       ./aws_cw_logs -g dev-app-logs
     2018-02-15T11:46:16Z app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
     [...]
 
   -s <log_group_name> <stream_name> Download the stream from the log group
     ex:
-       ./aws_cw_logs dev-app-logs app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
+       ./aws_cw_logs -s dev-app-logs app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7
        will create the file ./streams/app/app/c0df45ec-ab89-4a69-80d3-95341eb5f7c7/dev-app-logs.log
 
-  -l  <log_group_name>  It will download the last stream from the log group.
+  -l  <log_group_name> It will download the last stream from the log group.
     ex:
        ./aws_cw_logs -l dev-app-logs
 
