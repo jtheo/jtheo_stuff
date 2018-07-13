@@ -2,6 +2,16 @@
 
 These are scripts probably useless for anyone but me but just in case and to keep track; I'll leave them here. They're also awfully written and missing of security checks: they're written as root and root know what's doing. If there's a help, it's also quite rude because I'm [bofh](https://en.wikipedia.org/wiki/Bastard_Operator_From_Hell) inside. 
 
+
+## xml2json 
+Simple python script to convert xml to json 
+> Ex:
+
+> cat file.xml | xml2json
+or
+> xml2json file.xml
+
+
 ## logrotate.sh
 Simple logrotate, launch it with the name of the logs, wildcards will be expanded.
 > Ex: 
