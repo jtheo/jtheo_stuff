@@ -1,5 +1,1 @@
-.
-..
-restart_tasks.sh
-statuscake.sh
-zuul.check.sh
+not_ready/
