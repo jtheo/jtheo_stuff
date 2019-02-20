@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-import json, sys
+import json, sys, os
+
+who_me = os.path.basename(sys.argv[0])
 
 try:
     import jwt
 except:
-    print("All work and no jwt module makes {} a dull script".format(sys.argv[0]))
+    print("All work and no jwt module makes {} a dull script".format(who_me))
     sys.exit()
 
 try:
@@ -31,7 +33,7 @@ Try something like:
 or
 echo 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzb21lIjoicGF5bG9hZCJ9.Joh1R2dYzkRvDkqv3sygm5YyK8Gi4ShZqbhK2gxcs2U' | {0}
 
-            """.format(sys.argv[0]))
+            """.format(who_me))
         sys.exit(1)
 
 
