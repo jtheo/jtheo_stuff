@@ -30,13 +30,14 @@ do
   Id=$(echo $line | jq -r .InstanceId)
   Prv_Ip=$(echo $line | jq -r .PrivateIpAddress)
   Pub_Ip=$(echo $line | jq -r .PublicIpAddress)
-  State=$(echo $line | jq -c ".State.Name" | tr -d '"')
+  State=$(echo $line | jq -cr ".State.Name")
+  Type=$(echo $line | jq -cr ".InstanceType")
   Name=$( echo $line | jq -c '(.Tags[]|select(.Key=="Name")|.Value)' | tr -d '"' | awk '{print $1}')
 
   LineTags=$(echo $line | jq -c .Tags)
   LenTags=$(echo $LineTags | jq '. | length')
   Tags=$(c=${LenTags}; echo $LineTags | jq -c .[]| while read line;do val=$(echo $line | jq -r .Value); key=$(echo $line | jq -r .Key); printf "$key $val"; if [[ ${c} -gt 1 ]];then printf ", "; c=$((${c} - 1));fi; done)
 
- echo "${Name}|${Id}|${State}|${Prv_Ip}|${Pub_Ip}|${Tags}"
+ echo "${Name}|${Id}|${State}|${Type}|${Prv_Ip}|${Pub_Ip}|${Tags}"
 
 done

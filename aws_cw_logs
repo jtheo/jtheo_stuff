@@ -47,13 +47,14 @@ function list_log_group(){
 
 function get_log_event(){
   log_group=$1
+  log_dir=$(echo ${log_group} | tr '/' '-')
   stream=$2
   get_command="aws logs get-log-events --log-group-name $log_group --start-from-head"
   stream_next_token=''
   counter=0
 
-  mkdir -p streams/$stream
-  output_path=$(printf "streams/%s/%s.log" $stream $log_group)
+  mkdir -p streams/${log_group}
+  output_path=$(printf "streams/%s/%s.log" $log_group  $stream )
   > ${output_path}
 
   while true; do
