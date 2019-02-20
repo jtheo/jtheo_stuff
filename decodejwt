@@ -5,7 +5,7 @@ import json, sys
 try:
     import jwt
 except:
-    print("All work and no jwt module makes this script a dull script")
+    print("All work and no jwt module makes {} a dull script".format(sys.argv[0]))
     sys.exit()
 
 try:
@@ -14,8 +14,7 @@ try:
     from pygments.formatters import TerminalFormatter
     pygments_enabled = True
 except:
-    pygments_enabled = False
-    
+    pygments_enabled = False    
 
 
 if len(sys.argv) > 1:
@@ -28,18 +27,16 @@ else:
 Still missing the point, are you?
 
 Try something like:
-{} 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzb21lIjoicGF5bG9hZCJ9.Joh1R2dYzkRvDkqv3sygm5YyK8Gi4ShZqbhK2gxcs2U'
+{0} 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzb21lIjoicGF5bG9hZCJ9.Joh1R2dYzkRvDkqv3sygm5YyK8Gi4ShZqbhK2gxcs2U'
 or
-echo 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzb21lIjoicGF5bG9hZCJ9.Joh1R2dYzkRvDkqv3sygm5YyK8Gi4ShZqbhK2gxcs2U' | {}
+echo 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzb21lIjoicGF5bG9hZCJ9.Joh1R2dYzkRvDkqv3sygm5YyK8Gi4ShZqbhK2gxcs2U' | {0}
 
-            """.format(sys.argv[0],sys.argv[0]))
+            """.format(sys.argv[0]))
         sys.exit(1)
 
-print("Type: {}, Length: {}".format(type(encoded), len(encoded)))
 
 decoded = jwt.decode(encoded, verify=False)
 indented = json.dumps(decoded, indent=4)
-
 
 if pygments_enabled:
     print(highlight(indented, JsonLexer(), TerminalFormatter()))
